@@ -208,14 +208,25 @@
       flex-direction: column;
       gap: 5px;
       cursor: pointer;
-      padding: 4px;
+      padding: 6px;
+      /* Strip all browser button defaults */
+      background: none;
+      border: none;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .nav-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      border-radius: 4px;
     }
 
     .nav-toggle span {
       display: block;
       width: 24px;
       height: 2px;
-      background: var(--text-primary);
+      background: var(--accent);   /* cyan lines, not white */
       border-radius: 2px;
       transition: var(--transition);
     }
@@ -1398,6 +1409,9 @@
     (function initParticles() {
       const canvas = document.getElementById('hero-canvas');
       const ctx    = canvas.getContext('2d');
+      // The canvas sits position:absolute inside #hero — read from the
+      // parent section, not the canvas itself (canvas has no intrinsic size).
+      const hero   = document.getElementById('hero');
 
       let W, H, particles;
       const PARTICLE_COUNT  = 60;
@@ -1406,8 +1420,8 @@
       const LINE_COLOR_BASE = '0, 212, 255'; // RGB for rgba() construction
 
       function resize() {
-        W = canvas.width  = canvas.offsetWidth;
-        H = canvas.height = canvas.offsetHeight;
+        W = canvas.width  = hero.offsetWidth;
+        H = canvas.height = hero.offsetHeight;
       }
 
       function createParticle() {
@@ -1471,10 +1485,10 @@
       init();
       draw();
 
-      // Re-size canvas when the window changes (e.g., device rotation)
+      // Re-size canvas when the window changes (e.g., device rotation).
+      // Reading from hero.offsetWidth/Height keeps it in sync with the section.
       window.addEventListener('resize', () => {
         resize();
-        // Re-position particles within new bounds
         particles.forEach(p => {
           p.x = Math.min(p.x, W);
           p.y = Math.min(p.y, H);
